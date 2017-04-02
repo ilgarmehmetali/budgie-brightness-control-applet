@@ -1,0 +1,8 @@
+[Plugin]
+Module=libbudgiebrigtnesscontrolapplet.so
+Name=Budgie Brightness Control
+Description=Brightness Control
+Authors=Mehmet Ali İLGAR <mehmet.ali@milgar.net>
+Copyright=Copyright © 2017 Mehmet Ali İLGAR
+Website=https://github.com/ilgarmehmetali/budgie-brightness-control
+Icon=display-brightness-symbolic
