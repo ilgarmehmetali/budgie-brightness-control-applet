@@ -256,13 +256,18 @@ public class Applet : Budgie.Applet
             string ls_stdout;
             string ls_stderr;
             int ls_status;
-
+            Pid child_pid;
+            
             Process.spawn_async ("/",
                 spawn_args,
                 spawn_env,
-                SpawnFlags.SEARCH_PATH,
+                SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD,
                 null,
-                null);
+                out child_pid);
+
+            ChildWatch.add (child_pid, (pid, status) => {
+                Process.close_pid (pid);
+            });
         } catch(SpawnError e){
             error(e.message);
         }
