@@ -72,6 +72,7 @@ public class Applet : Budgie.Applet
                 this.popover.hide();
             } else {
                 /* Not showing, so show it.. */
+                brightness_scale.set_value(this.get_brightness());
                 this.manager.show_popover(ebox);
             }
             return Gdk.EVENT_STOP;
