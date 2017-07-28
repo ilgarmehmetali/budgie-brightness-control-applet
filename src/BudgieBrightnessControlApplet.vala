@@ -44,6 +44,8 @@ public class Applet : Budgie.Applet
     /* Use this to register popovers with the panel system */
     unowned Budgie.PopoverManager? manager = null;
 
+    private ILogindManager? logind_manager;
+
     public Applet()
     {
         this.max_brightness = this.get_max_brightness();
@@ -79,6 +81,23 @@ public class Applet : Budgie.Applet
         });
 
         show_all();
+
+        try {
+            logind_manager = Bus.get_proxy_sync (BusType.SYSTEM, LOGIND_BUS_NAME, LOGIND_BUS_PATH);
+            if(logind_manager != null){
+                logind_manager.prepare_for_sleep.connect((start) => {
+                    if(!start){
+                        new Thread<int>("", () => {
+                            Thread.usleep(5000000);
+                            this.set_brightness(this.get_brightness());
+                            return 0;
+                        });
+                    }
+                });
+            }
+        } catch (IOError e) {
+            print(e.message);
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ custom_target('plugin-file-workspaces',
 
 applet_budgie_brightness_control_sources = [
     'BudgieBrightnessControlApplet.vala',
+    'ILogindManager.vala',
 ]
 
 applet_budgie_brightness_control_deps = [
