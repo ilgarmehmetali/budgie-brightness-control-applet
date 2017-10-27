@@ -29,7 +29,7 @@ public class Applet : Budgie.Applet
     public Gtk.EventBox? ebox;
 
     /** GtkPopover in which to show a brightness control */
-    public Gtk.Popover popover;
+    public Budgie.Popover popover;
 
     /** Display scale for the brightness controls */
     private Gtk.Scale brightness_scale;
@@ -42,7 +42,7 @@ public class Applet : Budgie.Applet
     private int max_brightness;
 
     /* Use this to register popovers with the panel system */
-    unowned Budgie.PopoverManager? manager = null;
+    private unowned Budgie.PopoverManager? manager = null;
 
     private ILogindManager? logind_manager;
 
@@ -106,7 +106,7 @@ public class Applet : Budgie.Applet
      */
     private void create_brightness_popover()
     {
-        popover = new Gtk.Popover(ebox);
+        popover = new Budgie.Popover(ebox);
         Gtk.Box? popover_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         popover.add(popover_box);
         Gtk.Button? sub_button = new Gtk.Button.from_icon_name("list-remove-symbolic", Gtk.IconSize.BUTTON);
