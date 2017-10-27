@@ -107,18 +107,19 @@ public class Applet : Budgie.Applet
     private void create_brightness_popover()
     {
         popover = new Budgie.Popover(ebox);
-        Gtk.Box? popover_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        Gtk.Box? popover_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         popover.add(popover_box);
+        popover_box.margin = 6;
         Gtk.Button? sub_button = new Gtk.Button.from_icon_name("list-remove-symbolic", Gtk.IconSize.BUTTON);
         Gtk.Button? plus_button = new Gtk.Button.from_icon_name("list-add-symbolic", Gtk.IconSize.BUTTON);
 
         /* + button */
-        popover_box.pack_start(plus_button, false, false, 1);
-        plus_button.clicked.connect(()=> {
-            adjust_brightness_increment(+step_size);
+        popover_box.pack_start(sub_button, false, false, 1);
+        sub_button.clicked.connect(()=> {
+            adjust_brightness_increment(-step_size);
         });
 
-        brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.VERTICAL, 0, this.max_brightness, 1);
+        brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness, 1);
         popover_box.pack_start(brightness_scale, false, false, 0);
         brightness_scale.set_value(this.get_brightness());
 
@@ -126,14 +127,14 @@ public class Applet : Budgie.Applet
         scale_id = brightness_scale.value_changed.connect(on_scale_changed);
 
         /* - button */
-        popover_box.pack_start(sub_button, false, false, 1);
-        sub_button.clicked.connect(()=> {
-            adjust_brightness_increment(-step_size);
+        popover_box.pack_start(plus_button, false, false, 1);
+        plus_button.clicked.connect(()=> {
+            adjust_brightness_increment(+step_size);
         });
 
         /* Refine visual appearance of the scale.. */
         brightness_scale.set_draw_value(false);
-        brightness_scale.set_size_request(-1, 100);
+        brightness_scale.set_size_request(140, -1);
 
         /* Flat buttons only pls :) */
         sub_button.get_style_context().add_class("flat");
@@ -145,7 +146,7 @@ public class Applet : Budgie.Applet
         sub_button.set_can_focus(false);
         plus_button.set_can_focus(false);
         brightness_scale.set_can_focus(false);
-        brightness_scale.set_inverted(true);
+        brightness_scale.set_inverted(false);
 
         popover.get_child().show_all();
     }
