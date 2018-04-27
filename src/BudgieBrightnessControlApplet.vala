@@ -226,7 +226,7 @@ public class Applet : Budgie.Applet
      */
     private int get_max_brightness() {
         try {
-            string[] spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper",
+            string[] spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper",
                 "--get-max-brightness"};
             string[] spawn_env = Environ.get ();
             string ls_stdout;
@@ -254,7 +254,7 @@ public class Applet : Budgie.Applet
      */
     private int get_brightness() {
         try {
-            string[] spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper",
+            string[] spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper",
                 "--get-brightness"};
             string[] spawn_env = Environ.get ();
             string ls_stdout;
@@ -282,7 +282,7 @@ public class Applet : Budgie.Applet
      */
     private void set_brightness(int brightness) {
         try {
-            string[] spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper",
+            string[] spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper",
                 "--set-brightness", brightness.to_string()};
             string[] spawn_env = Environ.get ();
             string ls_stdout;

@@ -1,7 +1,7 @@
 project(
     'budgie-brightness-control-applet',
     ['c', 'vala'],
-    version: '1.0.0',
+    version: '0.2.1',
     license: [
         'GPL-2.0'
     ],
