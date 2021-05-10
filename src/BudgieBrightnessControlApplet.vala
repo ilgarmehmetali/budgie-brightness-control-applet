@@ -325,10 +325,10 @@ public class Applet : Budgie.Applet
         	
         	if (gnomeSettingsDaemonOlderThan332) {
         		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--set-brightness", brightness.to_string()};
-        	} else if (gnomeSettingsDaemon332) {
-        		spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper", deviceName, brightness.to_string()};
-        	} else {
+        	} else if (gnomeSettingsDaemon336) {
         		spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()};
+        	} else {
+        		spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper", deviceName, brightness.to_string()};
         	}
         	
             //string[] spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()};
