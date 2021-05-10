@@ -55,7 +55,7 @@ public class Applet : Budgie.Applet
 
     public Applet()
     {
-#if HAVE_GNOME_SETTINGS_DAEMON_3_36_0
+#if GNOME_SETTINGS_DAEMON_3_36_0
         gnomeSettingsDaemon336 = true;
 #endif
 #if GNOME_SETTINGS_DAEMON_3_32_0
