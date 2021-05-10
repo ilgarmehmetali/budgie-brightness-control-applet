@@ -7,6 +7,8 @@ custom_target('plugin-file-workspaces',
     install_dir: LIB_INSTALL_DIR,
 )
 
+ValaArgs = []
+
 if DEPENDENCY_GNOME_SETTINGS_DAEMON.version().version_compare('>=3.36.0')
     ValaArgs += ['-D', 'GNOME_SETTINGS_DAEMON_3_36_0']
 endif
