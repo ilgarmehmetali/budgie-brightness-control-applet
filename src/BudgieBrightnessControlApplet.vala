@@ -45,10 +45,28 @@ public class Applet : Budgie.Applet
     private unowned Budgie.PopoverManager? manager = null;
 
     private ILogindManager? logind_manager;
+    
+    private string deviceName = "";
+    
+    // Gnome Daemon Settings Version so we know what we can use
+    public bool gnomeSettingsDaemon336 = false;
+    public bool gnomeSettingsDaemon332 = false;
+    public bool gnomeSettingsDaemonOlderThan332 = false;
 
     public Applet()
     {
-        this.max_brightness = this.get_max_brightness();
+#if HAVE_GNOME_SETTINGS_DAEMON_3_36_0
+        gnomeSettingsDaemon336 = true;
+#endif
+#if GNOME_SETTINGS_DAEMON_3_32_0
+        gnomeSettingsDaemon332 = true;
+#endif
+#if GNOME_SETTINGS_DAEMON_OLDER_THAN_3_32_0
+        gnomeSettingsDaemonOlderThan332 = true;
+#endif
+        this.max_brightness = get_device_and_max_brightness();
+        
+        this.step_size = calculate_step_size();
 
         widget = new Gtk.Image.from_icon_name("display-brightness-symbolic", Gtk.IconSize.MENU);
         ebox = new Gtk.EventBox();
@@ -74,7 +92,7 @@ public class Applet : Budgie.Applet
                 this.popover.hide();
             } else {
                 /* Not showing, so show it.. */
-                brightness_scale.set_value(this.get_brightness());
+                brightness_scale.set_value(this.get_brightness(false));
                 this.manager.show_popover(ebox);
             }
             return Gdk.EVENT_STOP;
@@ -89,7 +107,7 @@ public class Applet : Budgie.Applet
                     if(!start){
                         new Thread<int>("", () => {
                             Thread.usleep(5000000);
-                            this.set_brightness(this.get_brightness());
+                            this.set_brightness(this.get_brightness(false));
                             return 0;
                         });
                     }
@@ -121,7 +139,7 @@ public class Applet : Budgie.Applet
 
         brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness, 1);
         popover_box.pack_start(brightness_scale, false, false, 0);
-        brightness_scale.set_value(this.get_brightness());
+        brightness_scale.set_value(this.get_brightness(false));
 
         /* Hook up the value_changed event */
         scale_id = brightness_scale.value_changed.connect(on_scale_changed);
@@ -157,7 +175,7 @@ public class Applet : Budgie.Applet
     protected bool on_scroll_event(Gdk.EventScroll event)
     {
 
-        uint32 brightness = this.get_brightness();
+        uint32 brightness = this.get_brightness(false);
         var orig_brightness = brightness;
 
         switch (event.direction) {
@@ -206,7 +224,7 @@ public class Applet : Budgie.Applet
      */
     private void adjust_brightness_increment(int increment)
     {
-        int32 brightness = this.get_brightness();
+        int32 brightness = this.get_brightness(false);
         brightness += (int32)increment;
 
         if (brightness < 0) {
@@ -224,10 +242,14 @@ public class Applet : Budgie.Applet
     /**
      * Gets max brightness from gnome-settings-daemon
      */
-    private int get_max_brightness() {
+    private int get_device_and_max_brightness() {
+    	if (gnomeSettingsDaemonOlderThan332) {
+    		this.deviceName = "";
+    		return this.get_brightness(true);
+    	}
+    
         try {
-            string[] spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper",
-                "--get-max-brightness"};
+            string[] spawn_args = {"ls", "/sys/class/backlight/"};
             string[] spawn_env = Environ.get ();
             string ls_stdout;
             string ls_stderr;
@@ -241,21 +263,39 @@ public class Applet : Budgie.Applet
                 out ls_stdout,
                 out ls_stderr,
                 out ls_status);
-
-            return int.parse(ls_stdout);
+                
+            string[] devices = ls_stdout.split(" ");
+            
+            // dirty as hell but we just want the first device I guess.. 
+            if (devices.length > 0) {
+            	this.deviceName = "/sys/class/backlight/"+devices[0];
+            } else {
+            	this.deviceName = "";
+            }
+            
+            // to filter out any newline present here.. we don't want that.. causes it to fail
+            this.deviceName = this.deviceName.strip();
         } catch(SpawnError e){
             error(e.message);
         }
-        return 15;
+        
+        return this.get_brightness(true);
     }
 
     /**
-     * Gets max brightness from gnome-settings-daemon
+     * Gets max brightness
      */
-    private int get_brightness() {
+    private int get_brightness(bool max) {
         try {
-            string[] spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper",
-                "--get-brightness"};
+        	string[] spawn_args = {};
+        	
+        	if (gnomeSettingsDaemonOlderThan332) {
+        		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--get".concat(max ? "-max" : "").concat("-brightness")}
+        	} else {
+        		spawn_args = {"cat", deviceName.concat(max ? "/max_" : "/", "brightness")};
+        	}
+        	
+            //string[] spawn_args = {"cat", deviceName.concat(max ? "/max_" : "/", "brightness")};
             string[] spawn_env = Environ.get ();
             string ls_stdout;
             string ls_stderr;
@@ -274,7 +314,6 @@ public class Applet : Budgie.Applet
         } catch(SpawnError e){
             error(e.message);
         }
-        return 0;
     }
 
     /**
@@ -282,12 +321,18 @@ public class Applet : Budgie.Applet
      */
     private void set_brightness(int brightness) {
         try {
-            string[] spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper",
-                "--set-brightness", brightness.to_string()};
+        	string[] spawn_args = new string[4];
+        	
+        	if (gnomeSettingsDaemonOlderThan332) {
+        		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--set-brightness", brightness.to_string()}
+        	} else if (gnomeSettingsDaemon332) {
+        		spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper", deviceName, brightness.to_string()}
+        	} else {
+        		spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()}
+        	}
+        	
+            //string[] spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()};
             string[] spawn_env = Environ.get ();
-            string ls_stdout;
-            string ls_stderr;
-            int ls_status;
             Pid child_pid;
             
             Process.spawn_async ("/",
@@ -303,6 +348,14 @@ public class Applet : Budgie.Applet
         } catch(SpawnError e){
             error(e.message);
         }
+    }
+    
+    private int calculate_step_size() {
+    	if (this.max_brightness <= 20) {
+    		return 1;
+    	}
+    	
+    	return (int) (this.max_brightness / 20);
     }
 
     public override void update_popovers(Budgie.PopoverManager? manager)
