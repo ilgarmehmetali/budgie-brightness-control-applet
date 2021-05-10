@@ -290,7 +290,7 @@ public class Applet : Budgie.Applet
         	string[] spawn_args = {};
         	
         	if (gnomeSettingsDaemonOlderThan332) {
-        		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--get".concat(max ? "-max" : "").concat("-brightness")}
+        		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--get".concat(max ? "-max" : "").concat("-brightness")};
         	} else {
         		spawn_args = {"cat", deviceName.concat(max ? "/max_" : "/", "brightness")};
         	}
@@ -324,11 +324,11 @@ public class Applet : Budgie.Applet
         	string[] spawn_args = new string[4];
         	
         	if (gnomeSettingsDaemonOlderThan332) {
-        		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--set-brightness", brightness.to_string()}
+        		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--set-brightness", brightness.to_string()};
         	} else if (gnomeSettingsDaemon332) {
-        		spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper", deviceName, brightness.to_string()}
+        		spawn_args = {"pkexec", "/usr/lib/gnome-settings-daemon/gsd-backlight-helper", deviceName, brightness.to_string()};
         	} else {
-        		spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()}
+        		spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()};
         	}
         	
             //string[] spawn_args = {"pkexec", "/usr/libexec/gsd-backlight-helper", deviceName, brightness.to_string()};
