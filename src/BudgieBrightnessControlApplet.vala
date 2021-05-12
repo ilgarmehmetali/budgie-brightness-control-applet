@@ -48,7 +48,7 @@ public class Applet : Budgie.Applet
     private string[] devices = {};
     private int[] max_brightness = {};
     private int[] step_size = {};
-    private Gtk.Scale[] scales = {};
+    private Gtk.Scale[] scales;
     
     // Gnome Daemon Settings Version so we know what we can use
     public bool gnomeSettingsDaemon336 = false;
@@ -143,7 +143,7 @@ public class Applet : Budgie.Applet
 		    Gtk.Label? label = new Gtk.Label(devices[i].substring(21).concat("   "));
 		    
 		    /* device name label */
-		    if (devices.length >= 1 && !gnomeSettingsDaemonOlderThan332) {
+		    if (devices.length > 1 && !gnomeSettingsDaemonOlderThan332) {
 		    	popover_box.attach(label, 0, i, 1, 1);
 		    }
 		    
@@ -157,7 +157,7 @@ public class Applet : Budgie.Applet
 		    });
 
 			Gtk.Scale? brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness[i], 1);
-			scales += brightness_scale;
+			scales[loopIndex] = brightness_scale;
 		    popover_box.attach(brightness_scale, 2, i, 1, 1);
 		    brightness_scale.set_value(this.get_brightness(false, i));
 
@@ -259,7 +259,7 @@ public class Applet : Budgie.Applet
 
         SignalHandler.block(scales[deviceIndex], scale_id[deviceIndex]);
         this.set_brightness(brightness, deviceIndex);
-        this.scales[deviceIndex].set_value(brightness);
+        scales[deviceIndex].set_value(brightness);
         SignalHandler.unblock(scales[deviceIndex], scale_id[deviceIndex]);
     }
 
