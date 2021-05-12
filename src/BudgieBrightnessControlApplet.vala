@@ -137,45 +137,43 @@ public class Applet : Budgie.Applet
         popover_box.margin = 6;
         scales = new Gtk.Scale[devices.length];
         
-        for (int __index = 0; __index < devices.length; __index++) {
+        for (int i = 0; i < devices.length; i++) {
         
 		    Gtk.Button? sub_button = new Gtk.Button.from_icon_name("list-remove-symbolic", Gtk.IconSize.BUTTON);
 		    Gtk.Button? plus_button = new Gtk.Button.from_icon_name("list-add-symbolic", Gtk.IconSize.BUTTON);
-		    Gtk.Label? label = new Gtk.Label(devices[__index].substring(21).concat("   "));
+		    Gtk.Label? label = new Gtk.Label(devices[i].substring(21).concat("   "));
 		    
 		    /* device name label */
 		    //if (devices.length >= 1 && !gnomeSettingsDaemonOlderThan332) {
-		    	popover_box.attach(label, 0, __index, 1, 1);
+		    	popover_box.attach(label, 0, i, 1, 1);
 		    //}
+		    int savedForLoopIndexScope = i;
 
 		    /* + button */
-		    popover_box.attach(sub_button, 1, __index, 1, 1);
+		    popover_box.attach(sub_button, 1, i, 1, 1);
 		    //popover_box.pack_start(sub_button, false, false, 1);
-		    print("\nCURRENT_INDEX:".concat(__index.to_string()+"\n"));
+		    print("\nCURRENT_INDEX:".concat(i.to_string()+"\n"));
 		    sub_button.clicked.connect(()=> {
-		    	int realIndex = __index;
-		    	print("\nBUTTON_INDEX:".concat(realIndex.to_string()+"\n"));
-		        adjust_brightness_increment(-step_size[realIndex], realIndex);
+		    	print("\nBUTTON_INDEX:".concat(savedForLoopIndexScope.to_string()+"\n"));
+		        adjust_brightness_increment(-step_size[savedForLoopIndexScope], savedForLoopIndexScope);
 		    });
 
-			Gtk.Scale? brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness[__index], 1);
-			scales[__index] = brightness_scale;
-		    popover_box.attach(brightness_scale, 2, __index, 1, 1);
-		    brightness_scale.set_value(this.get_brightness(false, __index));
+			Gtk.Scale? brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness[i], 1);
+			scales[i] = brightness_scale;
+		    popover_box.attach(brightness_scale, 2, i, 1, 1);
+		    brightness_scale.set_value(this.get_brightness(false, i));
 
 		    /* Hook up the value_changed event */
 		    scale_id += brightness_scale.value_changed.connect(() => {
-		    	int realIndex = __index;
-		    	on_scale_changed(realIndex);
+		    	on_scale_changed(savedForLoopIndexScope);
 		    });
 
 		    /* - button */
-		    popover_box.attach(plus_button, 3, __index, 1, 1);
+		    popover_box.attach(plus_button, 3, i, 1, 1);
 		    //popover_box.pack_start(plus_button, false, false, 1);
 		    plus_button.clicked.connect(()=> {
-		    	int realIndex = __index;
-		    	print("\nBUTTON_INDEX:".concat(realIndex.to_string()+"\n"));
-		        adjust_brightness_increment(+step_size[realIndex], realIndex);
+		    	print("\nBUTTON_INDEX:".concat(savedForLoopIndexScope.to_string()+"\n"));
+		        adjust_brightness_increment(+step_size[savedForLoopIndexScope], savedForLoopIndexScope);
 		    });
 
 		    /* Refine visual appearance of the scale.. */
