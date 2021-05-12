@@ -151,8 +151,10 @@ public class Applet : Budgie.Applet
 		    /* + button */
 		    popover_box.attach(sub_button, 1, __index, 1, 1);
 		    //popover_box.pack_start(sub_button, false, false, 1);
+		    print("\nCURRENT_INDEX:".concat(__index.to_string()+"\n"));
 		    sub_button.clicked.connect(()=> {
 		    	int realIndex = __index;
+		    	print("\nBUTTON_INDEX:".concat(realIndex.to_string()+"\n"));
 		        adjust_brightness_increment(-step_size[realIndex], realIndex);
 		    });
 
@@ -172,6 +174,7 @@ public class Applet : Budgie.Applet
 		    //popover_box.pack_start(plus_button, false, false, 1);
 		    plus_button.clicked.connect(()=> {
 		    	int realIndex = __index;
+		    	print("\nBUTTON_INDEX:".concat(realIndex.to_string()+"\n"));
 		        adjust_brightness_increment(+step_size[realIndex], realIndex);
 		    });
 
