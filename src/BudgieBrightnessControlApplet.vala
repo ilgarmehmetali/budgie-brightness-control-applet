@@ -141,7 +141,7 @@ public class Applet : Budgie.Applet
         
 		    Gtk.Button? sub_button = new Gtk.Button.from_icon_name("list-remove-symbolic", Gtk.IconSize.BUTTON);
 		    Gtk.Button? plus_button = new Gtk.Button.from_icon_name("list-add-symbolic", Gtk.IconSize.BUTTON);
-		    Gtk.Label? label = new Gtk.Label(devices[i].substring(21));
+		    Gtk.Label? label = new Gtk.Label(devices[i].substring(21).concat("   "));
 		    
 		    /* device name label */
 		    //if (devices.length >= 1 && !gnomeSettingsDaemonOlderThan332) {
@@ -339,6 +339,10 @@ public class Applet : Budgie.Applet
     private void set_brightness(int brightness, int deviceIndex) {
         try {
         	string[] spawn_args = new string[4];
+        	
+        	print("device to set: ".concat(devices[deviceIndex]));
+        	print("max brightnes: ".concat(max_brightness[deviceIndex].to_string()));
+        	print("set size     : ".concat(step_size[deviceIndex].to_string()));
         	
         	if (gnomeSettingsDaemonOlderThan332) {
         		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--set-brightness", brightness.to_string()};
