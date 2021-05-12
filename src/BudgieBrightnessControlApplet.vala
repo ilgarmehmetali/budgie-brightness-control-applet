@@ -141,15 +141,15 @@ public class Applet : Budgie.Applet
         
 		    Gtk.Button? sub_button = new Gtk.Button.from_icon_name("list-remove-symbolic", Gtk.IconSize.BUTTON);
 		    Gtk.Button? plus_button = new Gtk.Button.from_icon_name("list-add-symbolic", Gtk.IconSize.BUTTON);
-		    Gtk.Label? label = new Gtk.Label(devices[i]);
+		    Gtk.Label? label = new Gtk.Label(devices[i].substring(21));
 		    
 		    /* device name label */
 		    //if (devices.length >= 1 && !gnomeSettingsDaemonOlderThan332) {
-		    	popover_box.attach(label, i, 0, 1, 1);
+		    	popover_box.attach(label, 0, i, 1, 1);
 		    //}
 
 		    /* + button */
-		    popover_box.attach(sub_button, i, 1, 1, 1);
+		    popover_box.attach(sub_button, 1, i, 1, 1);
 		    //popover_box.pack_start(sub_button, false, false, 1);
 		    sub_button.clicked.connect(()=> {
 		        adjust_brightness_increment(-step_size[i], i);
@@ -157,7 +157,7 @@ public class Applet : Budgie.Applet
 
 			Gtk.Scale? brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness[i], 1);
 			scales[i] = brightness_scale;
-		    popover_box.attach(brightness_scale, i, 2, 1, 1);
+		    popover_box.attach(brightness_scale, 2, i, 1, 1);
 		    brightness_scale.set_value(this.get_brightness(false, i));
 
 		    /* Hook up the value_changed event */
@@ -166,7 +166,7 @@ public class Applet : Budgie.Applet
 		    });
 
 		    /* - button */
-		    popover_box.attach(plus_button, i, 3, 1, 1);
+		    popover_box.attach(plus_button, 3, i, 1, 1);
 		    //popover_box.pack_start(plus_button, false, false, 1);
 		    plus_button.clicked.connect(()=> {
 		        adjust_brightness_increment(+step_size[i], i);
