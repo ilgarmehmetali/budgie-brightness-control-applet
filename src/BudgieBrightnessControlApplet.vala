@@ -33,7 +33,6 @@ public class Applet : Budgie.Applet
     public Budgie.Popover popover;
 
     /** Display scale for the brightness controls */
-    //private Gtk.Scale brightness_scale;
 
     /** Track the scale value_changed to prevent cross-noise */
     private ulong[] scale_id = {};
@@ -49,7 +48,7 @@ public class Applet : Budgie.Applet
     private string[] devices = {};
     private int[] max_brightness = {};
     private int[] step_size = {};
-    private Gtk.Scale[] scales;
+    private Gtk.Scale[] scales = {};
     
     // Gnome Daemon Settings Version so we know what we can use
     public bool gnomeSettingsDaemon336 = false;
@@ -144,36 +143,33 @@ public class Applet : Budgie.Applet
 		    Gtk.Label? label = new Gtk.Label(devices[i].substring(21).concat("   "));
 		    
 		    /* device name label */
-		    //if (devices.length >= 1 && !gnomeSettingsDaemonOlderThan332) {
+		    if (devices.length >= 1 && !gnomeSettingsDaemonOlderThan332) {
 		    	popover_box.attach(label, 0, i, 1, 1);
-		    //}
-		    int savedForLoopIndexScope = i;
+		    }
+		    
+		    // Need to save the loop index or otherwise it will always be amount of devices and bug out
+		    int loopIndex = i;
 
 		    /* + button */
 		    popover_box.attach(sub_button, 1, i, 1, 1);
-		    //popover_box.pack_start(sub_button, false, false, 1);
-		    print("\nCURRENT_INDEX:".concat(i.to_string()+"\n"));
 		    sub_button.clicked.connect(()=> {
-		    	print("\nBUTTON_INDEX:".concat(savedForLoopIndexScope.to_string()+"\n"));
-		        adjust_brightness_increment(-step_size[savedForLoopIndexScope], savedForLoopIndexScope);
+		        adjust_brightness_increment(-step_size[loopIndex], loopIndex);
 		    });
 
 			Gtk.Scale? brightness_scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, 0, this.max_brightness[i], 1);
-			scales[i] = brightness_scale;
+			scales += brightness_scale;
 		    popover_box.attach(brightness_scale, 2, i, 1, 1);
 		    brightness_scale.set_value(this.get_brightness(false, i));
 
 		    /* Hook up the value_changed event */
 		    scale_id += brightness_scale.value_changed.connect(() => {
-		    	on_scale_changed(savedForLoopIndexScope);
+		    	on_scale_changed(loopIndex);
 		    });
 
 		    /* - button */
 		    popover_box.attach(plus_button, 3, i, 1, 1);
-		    //popover_box.pack_start(plus_button, false, false, 1);
 		    plus_button.clicked.connect(()=> {
-		    	print("\nBUTTON_INDEX:".concat(savedForLoopIndexScope.to_string()+"\n"));
-		        adjust_brightness_increment(+step_size[savedForLoopIndexScope], savedForLoopIndexScope);
+		        adjust_brightness_increment(+step_size[loopIndex], loopIndex);
 		    });
 
 		    /* Refine visual appearance of the scale.. */
@@ -252,7 +248,6 @@ public class Applet : Budgie.Applet
      */
     private void adjust_brightness_increment(int increment, int deviceIndex)
     {
-    	print("DEVICE_INDEX:".concat(deviceIndex.to_string()));
         int32 brightness = this.get_brightness(false, deviceIndex);
         brightness += (int32)increment;
 
@@ -344,10 +339,6 @@ public class Applet : Budgie.Applet
     private void set_brightness(int brightness, int deviceIndex) {
         try {
         	string[] spawn_args = new string[4];
-        	
-        	print("device to set: ".concat(devices[deviceIndex]));
-        	print("max brightnes: ".concat(max_brightness[deviceIndex].to_string()));
-        	print("set size     : ".concat(step_size[deviceIndex].to_string()));
         	
         	if (gnomeSettingsDaemonOlderThan332) {
         		spawn_args = {"pkexec", "/usr/lib/gsd-backlight-helper", "--set-brightness", brightness.to_string()};
