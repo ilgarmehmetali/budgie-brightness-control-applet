@@ -248,6 +248,7 @@ public class Applet : Budgie.Applet
      */
     private void adjust_brightness_increment(int increment, int deviceIndex)
     {
+    	print("DEVICE_INDEX:".concat(deviceIndex.to_string()));
         int32 brightness = this.get_brightness(false, deviceIndex);
         brightness += (int32)increment;
 
