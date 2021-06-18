@@ -271,6 +271,7 @@ public class Applet : Budgie.Applet
     		this.devices += "";
     		this.step_size += this.calculate_step_size(0);
     		this.max_brightness += this.get_brightness(true, 0);
+    		return;
     	}
     
         try {
